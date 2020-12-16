@@ -31,29 +31,55 @@ const useStyles = createUseStyles({
 function App() {
   const classes = useStyles();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const getRequest = () => {
+    fetch(`http://${process.env.REACT_APP_BACKEND_HOST}:4125/api/login`, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      });
+  };
 
   const signIn = (event) => {
     event.preventDefault();
 
     const formData = {
-      email,
+      username,
       password,
     };
 
     console.log(formData);
+
+    fetch(`http://${process.env.REACT_APP_BACKEND_HOST}:4125/api/login`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => console.log("something went wrong " + err));
   };
   return (
     <div className={classes.root}>
       <h1>Sign in below!</h1>
       <form className={classes.form} onSubmit={(event) => signIn(event)}>
         <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          name="text"
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <input
           name="password"
@@ -64,6 +90,8 @@ function App() {
         />
         <input name="submit" id="submit" type="submit" />
       </form>
+      <button onClick={() => getRequest()}> Press for get request</button>
+      <h3>Host port is: {process.env.REACT_APP_BACKEND_HOST}</h3>
     </div>
   );
 }
