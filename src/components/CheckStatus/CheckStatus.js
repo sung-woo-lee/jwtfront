@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/auth-context";
+import { useHistory } from "react-router-dom";
 
 const CheckStatus = (props) => {
-  const [status, setStatus] = useState();
+  const history = useHistory();
+  const { user, setUser } = useContext(AuthContext);
 
-  useEffect(() => {});
-
-  const checkStatus = () => {};
-
+  useEffect(() => {
+    setTimeout(() => {
+      setUser(null);
+      localStorage.removeItem("jwt");
+      history.push("/");
+    }, 3 * 1000);
+  });
   return (
     <div>
-      <h1>You are {status}, good job!</h1>
+      <h1>You are {user}, good job!</h1>
+      <h2>Signing you out now.</h2>
     </div>
   );
 };

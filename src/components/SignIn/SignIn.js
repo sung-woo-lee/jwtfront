@@ -1,5 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { createUseStyles } from "react-jss";
+
+import { AuthContext } from "../../context/auth-context";
+import { ErrorContext } from "../../context/error-context";
+import ErrorMessage from "../Error/ErrorMessage";
 
 const useStyles = createUseStyles({
   root: {
@@ -29,10 +34,15 @@ const useStyles = createUseStyles({
 });
 
 const SignIn = (props) => {
+  const history = useHistory();
   const classes = useStyles();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { user, setUser } = useContext(AuthContext);
+  const { isError, setIsError, errorMessage, setErrorMessage } = useContext(
+    ErrorContext
+  );
 
   const getRequest = () => {
     fetch(`http://${process.env.REACT_APP_BACKEND_HOST}:4125/api/login`, {
@@ -46,14 +56,11 @@ const SignIn = (props) => {
 
   const signIn = (event) => {
     event.preventDefault();
-
+    localStorage.removeItem("jwt");
     const formData = {
       username,
       password,
     };
-
-    console.log(formData);
-
     fetch(`http://${process.env.REACT_APP_BACKEND_HOST}:4125/api/login`, {
       method: "POST",
       mode: "cors",
@@ -65,13 +72,24 @@ const SignIn = (props) => {
       .then((response) => {
         return response.json();
       })
-      .then((data) => {
-        console.log(data);
+      .then((json) => {
+        if (!json.ok) {
+          console.log(json);
+          throw Error(json.message);
+        }
+        setUser(json.data.username);
+        localStorage.setItem("jwt", json.data.token);
+        history.push("/check-status");
       })
-      .catch((err) => console.log("something went wrong " + err));
+      .catch((err) => {
+        setIsError(true);
+        setErrorMessage("Something went wrong " + err);
+      });
   };
   return (
     <div className={classes.root}>
+      {isError ? <ErrorMessage message={errorMessage} /> : null}
+
       <h1>Sign in below!</h1>
       <form className={classes.form} onSubmit={(event) => signIn(event)}>
         <input
