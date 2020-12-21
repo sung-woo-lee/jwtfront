@@ -79,7 +79,7 @@ const SignIn = (props) => {
         }
         setUser(json.data.username);
         localStorage.setItem("jwt", json.data.token);
-        history.push("/check-status");
+        history.push("/profile");
       })
       .catch((err) => {
         setIsError(true);
