@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { AuthContextProvider } from "./context/auth-context";
+import { AuthContext, AuthContextProvider } from "./context/auth-context";
 import { ErrorContextProvider } from "./context/error-context";
 
 import SignIn from "./components/SignIn/SignIn";

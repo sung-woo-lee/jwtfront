@@ -14,7 +14,7 @@ const CheckStatus = (props) => {
     history.push("/");
   };
 
-  if (!user || !jwt) {
+  if (!jwt) {
     return <Redirect to="/" />;
   }
   return (
