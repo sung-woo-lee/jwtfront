@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, Redirect } from "react-router-dom";
 import { createUseStyles } from "react-jss";
 
 import { AuthContext } from "../../context/auth-context";
@@ -54,13 +54,14 @@ const SignIn = (props) => {
       });
   };
 
-  const signIn = (event) => {
+  const logIn = (event) => {
     event.preventDefault();
     localStorage.removeItem("jwt");
     const formData = {
       username,
       password,
     };
+
     fetch(`http://${process.env.REACT_APP_BACKEND_HOST}:4125/api/login`, {
       method: "POST",
       mode: "cors",
@@ -78,6 +79,7 @@ const SignIn = (props) => {
           throw Error(json.message);
         }
         setUser(json.data.username);
+        console.log(json.data.username);
         localStorage.setItem("jwt", json.data.token);
         history.push("/profile");
       })
@@ -88,10 +90,12 @@ const SignIn = (props) => {
   };
   return (
     <div className={classes.root}>
+      {user ? <Redirect to="/profile" /> : null}
       {isError ? <ErrorMessage message={errorMessage} /> : null}
 
+      <h1>You are signed in as {user}</h1>
       <h1>Sign in below!</h1>
-      <form className={classes.form} onSubmit={(event) => signIn(event)}>
+      <form className={classes.form} onSubmit={(event) => logIn(event)}>
         <input
           name="text"
           type="text"
